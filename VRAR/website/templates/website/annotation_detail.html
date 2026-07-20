@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ annotation.title }}</title>
+    <style>
+        :root {
+            --bg: #f4f1ea;
+            --panel: #ffffff;
+            --text: #1f2933;
+            --muted: #667085;
+            --accent: #0f766e;
+            --accent-soft: #d8f3ef;
+            --border: #d8dde3;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            color: var(--text);
+            background: linear-gradient(135deg, #f4f1ea 0%, #eef4f7 100%);
+        }
+
+        .wrap {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 32px 20px 56px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 18px;
+            border-radius: 999px;
+            text-decoration: none;
+            background: var(--accent);
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .button.secondary {
+            background: #eef2f5;
+            color: var(--text);
+        }
+
+        .panel {
+            display: grid;
+            grid-template-columns: 1.6fr 1fr;
+            gap: 24px;
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            box-shadow: 0 14px 40px rgba(15, 23, 42, 0.08);
+            padding: 28px;
+        }
+
+        .meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 16px 0 24px;
+        }
+
+        .pill {
+            display: inline-flex;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: var(--accent-soft);
+            color: #115e59;
+            font-weight: 700;
+        }
+
+        .section {
+            margin-top: 0;
+        }
+
+        .section h2 {
+            margin: 0 0 10px;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+        }
+
+        .instruction {
+            margin: 0;
+            line-height: 1.65;
+            font-size: 1.02rem;
+        }
+
+        .qr-card {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            padding: 20px;
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            background: #f8fafc;
+        }
+
+        .qr-code svg {
+            width: min(100%, 320px);
+            height: auto;
+            display: block;
+        }
+
+        .qr-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .audio-box {
+            margin-top: 20px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            background: #f8fafc;
+        }
+
+        .audio-box h2 {
+            margin: 0 0 10px;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+        }
+
+        .audio-box audio {
+            width: 100%;
+        }
+
+        .media-box {
+            margin-top: 20px;
+            padding: 16px;
+            border: 1px solid var(--border);
+            border-radius: 18px;
+            background: #f8fafc;
+        }
+
+        .media-box h2 {
+            margin: 0 0 10px;
+            font-size: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--muted);
+        }
+
+        .media-box img {
+            display: block;
+            width: 100%;
+            max-width: 360px;
+            height: auto;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            background: #fff;
+        }
+
+        .hint {
+            margin: 0;
+            color: var(--muted);
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        .print-note {
+            margin: 14px 0 0;
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        @media (max-width: 900px) {
+            .panel { grid-template-columns: 1fr; }
+            .topbar { flex-direction: column; }
+        }
+
+        @media print {
+            body { background: #fff; }
+            .wrap { max-width: none; padding: 0; }
+            .topbar, .button, .print-note { display: none !important; }
+            .panel {
+                box-shadow: none;
+                border: 0;
+                border-radius: 0;
+                padding: 0;
+            }
+            .qr-card {
+                background: #fff;
+                border: 1px solid #000;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="wrap">
+        <div class="topbar">
+            <div>
+                <h1 style="margin:0;">{{ annotation.title }}</h1>
+                <div class="meta">
+                    <span class="pill">ID: {{ annotation.id }}</span>
+                </div>
+            </div>
+            <div class="qr-actions">
+                <a class="button secondary" href="{% url 'website:annotation-qr-download' annotation.pk %}">Download QR</a>
+                <a class="button" href="{% url 'website:annotation-list' %}">Back to Dashboard</a>
+            </div>
+        </div>
+
+        <section class="panel">
+            <div>
+                <div class="section">
+                    <h2>Instruction</h2>
+                    <p class="instruction">{{ annotation.instruction }}</p>
+                </div>
+
+                {% if annotation.audio_file %}
+                    <div class="audio-box">
+                        <h2>Audio</h2>
+                        <audio controls src="{{ annotation.audio_file.url }}"></audio>
+                        <p class="print-note">Staff can play this note when the QR code is scanned in HoloLens.</p>
+                    </div>
+                {% endif %}
+
+                {% if annotation.image_file %}
+                    <div class="media-box">
+                        <h2>Image</h2>
+                        <img src="{{ annotation.image_file.url }}" alt="Reference image for {{ annotation.title }}">
+                        <p class="print-note">This image can be displayed alongside the annotation content in the headset.</p>
+                    </div>
+                {% endif %}
+
+                <p class="print-note">Use the browser print dialog to print this asset label with the QR code.</p>
+            </div>
+
+            <aside class="qr-card">
+                <div class="qr-code">{{ qr_svg }}</div>
+                <p class="hint">QR payload: asset unique ID only</p>
+                <a class="button secondary" href="{% url 'website:annotation-qr-download' annotation.pk %}">Download printable QR</a>
+            </aside>
+        </section>
+    </main>
+</body>
+</html>

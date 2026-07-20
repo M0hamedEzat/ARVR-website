@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Create Annotation</title>
+    <style>
+        :root {
+            --bg: #f4f1ea;
+            --panel: #ffffff;
+            --text: #1f2933;
+            --muted: #667085;
+            --accent: #0f766e;
+            --border: #d8dde3;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            color: var(--text);
+            background: linear-gradient(135deg, #f4f1ea 0%, #eef4f7 100%);
+        }
+
+        .wrap {
+            max-width: 860px;
+            margin: 0 auto;
+            padding: 32px 20px 56px;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            box-shadow: 0 14px 40px rgba(15, 23, 42, 0.08);
+            padding: 28px;
+        }
+
+        h1 { margin: 0 0 8px; }
+        p { margin: 0 0 20px; color: var(--muted); }
+
+        form { display: grid; gap: 18px; }
+
+        label {
+            display: block;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 12px 14px;
+            font: inherit;
+            background: #fff;
+        }
+
+        input[type="file"] {
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        input[type="file"]::file-selector-button {
+            border: 0;
+            border-radius: 999px;
+            padding: 10px 14px;
+            margin-right: 12px;
+            background: var(--accent);
+            color: #fff;
+            font: inherit;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .field-help {
+            margin-top: 6px;
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        .field-group {
+            display: grid;
+            gap: 6px;
+        }
+
+        .preview {
+            max-width: 220px;
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 8px;
+            background: #fff;
+        }
+
+        .preview img {
+            display: block;
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+        }
+
+        textarea { resize: vertical; }
+
+        .actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 18px;
+            border-radius: 999px;
+            text-decoration: none;
+            border: 0;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .primary { background: var(--accent); color: #fff; }
+        .secondary { background: #eef2f5; color: var(--text); }
+
+        .errors {
+            padding: 14px 16px;
+            border-radius: 14px;
+            background: #fff1f2;
+            color: #9f1239;
+        }
+    </style>
+</head>
+<body>
+    <main class="wrap">
+        <section class="panel">
+            <h1>Create Annotation</h1>
+            <p>Enter the instructions staff should see when scanning the asset QR code.</p>
+
+            {% if form.errors %}
+                <div class="errors">Please correct the highlighted fields and try again.</div>
+            {% endif %}
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="field-group">
+                    <label for="{{ form.title.id_for_label }}">Title</label>
+                    {{ form.title }}
+                </div>
+                <div class="field-group">
+                    <label for="{{ form.instruction.id_for_label }}">Instruction</label>
+                    {{ form.instruction }}
+                </div>
+                <div class="field-group">
+                    <label for="{{ form.audio_file.id_for_label }}">Audio Upload</label>
+                    {{ form.audio_file }}
+                    <div class="field-help">Optional. Upload a voice note or spoken instruction for HoloLens playback.</div>
+                </div>
+                <div class="field-group">
+                    <label for="{{ form.image_file.id_for_label }}">Image Upload</label>
+                    {{ form.image_file }}
+                    <div class="field-help">Optional. Upload a reference image or photo for display when the QR code is scanned.</div>
+                </div>
+                <div class="actions">
+                    <button class="button primary" type="submit">Save Annotation</button>
+                    <a class="button secondary" href="{% url 'website:annotation-list' %}">Cancel</a>
+                </div>
+            </form>
+        </section>
+    </main>
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Asset Annotation Dashboard</title>
+    <style>
+        :root {
+            color-scheme: light;
+            --bg: #f4f1ea;
+            --panel: #ffffff;
+            --text: #1f2933;
+            --muted: #667085;
+            --accent: #0f766e;
+            --accent-soft: #d8f3ef;
+            --border: #d8dde3;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            margin: 0;
+            font-family: Arial, Helvetica, sans-serif;
+            color: var(--text);
+            background: linear-gradient(135deg, #f4f1ea 0%, #eef4f7 100%);
+        }
+
+        .wrap {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 32px 20px 56px;
+        }
+
+        .hero {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            align-items: flex-end;
+            margin-bottom: 24px;
+        }
+
+        .hero h1 {
+            margin: 0 0 8px;
+            font-size: clamp(2rem, 4vw, 3rem);
+        }
+
+        .hero p {
+            margin: 0;
+            color: var(--muted);
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 18px;
+            border-radius: 999px;
+            text-decoration: none;
+            background: var(--accent);
+            color: #fff;
+            font-weight: 700;
+        }
+
+        .panel {
+            background: var(--panel);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            box-shadow: 0 14px 40px rgba(15, 23, 42, 0.08);
+            overflow: hidden;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 16px 18px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+            vertical-align: top;
+        }
+
+        th {
+            background: #f8fafc;
+            color: var(--muted);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+        }
+
+        tr:last-child td { border-bottom: 0; }
+
+        .audio-indicator {
+            display: inline-flex;
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: var(--accent-soft);
+            color: #115e59;
+            font-size: 0.9rem;
+            font-weight: 700;
+        }
+
+        .media-stack {
+            display: grid;
+            gap: 8px;
+        }
+
+        .media-preview {
+            width: 92px;
+            height: 92px;
+            padding: 8px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            background: #fff;
+            overflow: hidden;
+        }
+
+        .media-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            border-radius: 10px;
+        }
+
+        .qr-thumb {
+            width: 92px;
+            height: 92px;
+            padding: 8px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            background: #fff;
+        }
+
+        .qr-thumb svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        .download-link {
+            display: inline-flex;
+            margin-top: 10px;
+            color: var(--accent);
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .empty {
+            padding: 32px 18px;
+            color: var(--muted);
+        }
+
+        .row-link {
+            color: var(--accent);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        @media (max-width: 720px) {
+            .hero { flex-direction: column; align-items: stretch; }
+            table, thead, tbody, th, td, tr { display: block; }
+            thead { display: none; }
+            tr { border-bottom: 1px solid var(--border); }
+            td { border-bottom: 0; }
+            td::before {
+                content: attr(data-label);
+                display: block;
+                margin-bottom: 4px;
+                font-size: 0.78rem;
+                text-transform: uppercase;
+                letter-spacing: 0.04em;
+                color: var(--muted);
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="wrap">
+        <header class="hero">
+            <div>
+                <h1>AR/VR Annotation Dashboard</h1>
+            </div>
+            <a class="button" href="{% url 'website:annotation-create' %}">New Annotation</a>
+        </header>
+
+        <section class="panel">
+            {% if annotations %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Audio</th>
+                            <th>Image</th>
+                            <th>QR Label</th>
+                            <th>Created</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for annotation in annotations %}
+                            <tr>
+                                <td data-label="Title">{{ annotation.title }}</td>
+                                <td data-label="Audio">
+                                    {% if annotation.audio_file %}
+                                        <span class="audio-indicator">Uploaded</span>
+                                    {% else %}
+                                        <span class="audio-indicator">None</span>
+                                    {% endif %}
+                                </td>
+                                <td data-label="Image">
+                                    {% if annotation.image_file %}
+                                        <span class="audio-indicator">Uploaded</span>
+                                    {% else %}
+                                        <span class="audio-indicator">None</span>
+                                    {% endif %}
+                                </td>
+                                <td data-label="QR Label">
+                                    <div class="qr-thumb">{{ annotation.qr_svg }}</div>
+                                    <a class="download-link" href="{% url 'website:annotation-qr-download' annotation.pk %}">Download PDF</a>
+                                </td>
+                                <td data-label="Created">{{ annotation.created_at|date:"Y-m-d H:i" }}</td>
+                                <td data-label="Details"><a class="row-link" href="{{ annotation.get_absolute_url }}">View</a></td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="empty">No annotations have been created yet.</div>
+            {% endif %}
+        </section>
+    </main>
+</body>
+</html>
